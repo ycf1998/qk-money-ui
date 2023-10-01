@@ -1,49 +1,95 @@
-import {createRouter, createWebHashHistory, createWebHistory} from 'vue-router';
-import intercept from "./interceptor.js";
+import Vue from 'vue'
+import Router from 'vue-router'
+import Layout from '@/layout'
 
-import Layout from "@/layouts/DashboardLayout.vue";
-import systemRoutes from "./system.js"
+Vue.use(Router)
 
-// 存放固定的路由
-const defaultRouterList = [
-    {
-        path: '/',
-        component: Layout,
-        children: [
-            {
-                path: '',
-                name: 'Dashboard',
-                component: () => import('@/views/dashboard/index.vue'),
-            }
-        ]
-    },
-    // 登录页
-    {
-        path: '/login',
-        name: 'Login',
-        component: () => import('@/views/Login.vue'),
-    },
-    // 个人中心
-    {
-        path: '/personal',
-        component: Layout,
-        children: [
-            {
-                path: '',
-                name: 'Personal',
-                component: () => import('@/views/personal/index.vue'),
-            }
-        ]
-    },
-    // 404
-    { path: '/:pathMatch(.*)*', name: 'NotFound', component: () => import('@/views/error/NotFound.vue') },
-];
+export const constantRoutes = [
+  {
+    path: '/redirect',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '/redirect/:path(.*)',
+        component: () => import('@/views/redirect/index')
+      }
+    ]
+  },
+  {
+    path: '/login',
+    component: () => import('@/views/user/login/index'),
+    hidden: true
+  },
+  {
+    path: '/403',
+    component: () => import('@/views/error-page/403'),
+    hidden: true
+  },
+  {
+    path: '/404',
+    component: () => import('@/views/error-page/404'),
+    hidden: true
+  },
 
-export const routes = [...defaultRouterList, ...systemRoutes];
+  {
+    path: '/',
+    component: Layout,
+    redirect: '/dashboard',
+    children: [{
+      path: 'dashboard',
+      name: 'Dashboard',
+      component: () => import('@/views/dashboard/index'),
+      meta: { title: '首页', icon: 'dashboard', affix: true }
+    }]
+  },
+  {
+    path: '/profile',
+    component: Layout,
+    redirect: '/profile/index',
+    children: [
+      {
+        path: 'index',
+        name: 'Profile',
+        component: () => import('@/views/user/profile/index'),
+        meta: { title: '个人资料', icon: 'dashboard' },
+        hidden: true
+      }
+    ]
+  },
+  {
+    path: '/changePassword',
+    component: Layout,
+    redirect: '/changePassword/index',
+    children: [
+      {
+        path: 'index',
+        name: 'ChangePassword',
+        component: () => import('@/views/user/changePassword/index'),
+        meta: { title: '修改密码', icon: 'dashboard' },
+        hidden: true
+      }
+    ]
+  }
+]
 
-const router = createRouter({
-    history: createWebHashHistory(import.meta.env.BASE_URL),
-    routes,
-});
+const createRouter = () => new Router({
+  // mode: 'history', // require service support
+  scrollBehavior: () => ({ y: 0 }),
+  routes: constantRoutes
+})
 
-export default intercept(router);
+const router = createRouter()
+export function resetRouter () {
+  const newRouter = createRouter()
+  router.matcher = newRouter.matcher
+}
+
+// 解决路由版本问题：Uncaught (in promise) Error: Redirected when going from “/login?redirect=%2Fdashboard“ to “/“ via
+const originalPush = Router.prototype.push
+Router.prototype.push = function push (location, onResolve, onReject) {
+  if (onResolve || onReject) return originalPush.call(this, location, onResolve, onReject)
+  return originalPush.call(this, location).catch(err => err)
+}
+
+export default router;

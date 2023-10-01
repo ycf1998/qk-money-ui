@@ -1,173 +1,129 @@
 <template>
-    <PageWrapper>
-        <!-- 搜索栏 -->
-        <MoneyRR :money-crud="moneyCrud">
-            <el-input v-model="moneyCrud.query.nameOrDesc" placeholder="字典名称/描述" class="md:!w-52"
-                      @keyup.enter.native="moneyCrud.doQuery" />
-        </MoneyRR>
-        <!-- 数据表格 -->
-        <div class="inline-grid md:grid-cols-2 md:gap-2">
-            <el-card header="字典" shadow="never" class="mb-4 md:mb-0">
-                <!-- 操作行 -->
-                <MoneyCUD :money-crud="moneyCrud" class="pb-4" />
-                <MoneyCrudTable :money-crud="moneyCrud" class="pb-4" highlight-current-row>
-                    <template #opt="{scope}">
-                        <MoneyUD :money-crud="moneyCrud" :scope="scope" />
-                    </template>
-                </MoneyCrudTable>
-            </el-card>
-            <el-card shadow="never">
-                <template #header>
-                    <span>字典详情</span>
-                    <el-button plain class="float-right" :disabled="!moneyCrud2.optShow.add" @click="moneyCrud2.toAdd">
-                        添加详情
-                    </el-button>
-                </template>
-                <MoneyCrudTable :money-crud="moneyCrud2">
-                    <template #hidden="{scope}">
-                        <el-tag v-if="scope.row.hidden === true" type="info">是</el-tag>
-                        <el-tag v-else type="success">否</el-tag>
-                    </template>
-                    <template #opt="{scope}">
-                        <MoneyUD :money-crud="moneyCrud2" :scope="scope" />
-                    </template>
-                </MoneyCrudTable>
-            </el-card>
-        </div>
-        <!-- 表单 -->
-        <MoneyForm :money-crud="moneyCrud" :rules="rules">
-            <el-form-item label="字典名称" prop="name">
-                <el-input v-model.trim="moneyCrud.form.name" />
-            </el-form-item>
-            <el-form-item label="字典描述">
-                <el-input v-model.trim="moneyCrud.form.description" type="textarea" maxlength="250" show-word-limit />
-            </el-form-item>
-        </MoneyForm>
-        <!-- 表单 -->
-        <MoneyForm :money-crud="moneyCrud2" :rules="rules2">
-            <el-form-item label="字典名" prop="dict">
-                <el-input v-model.trim="moneyCrud2.form.dict" placeholder="点击表格选中字典" disabled />
-            </el-form-item>
-            <el-form-item label="字典标签" prop="label">
-                <el-input v-model.trim="moneyCrud2.form.label" />
-            </el-form-item>
-            <el-form-item label="字典值" prop="value">
-                <el-input v-model.trim="moneyCrud2.form.value" />
-            </el-form-item>
-            <el-form-item label="隐藏" prop="hidden">
-                <el-radio-group v-model="moneyCrud2.form.hidden">
-                    <el-radio v-for="(item, index) in [true, false]" :key="index" :label="item">
-                        {{ item ? '是' : '否' }}
-                    </el-radio>
-                </el-radio-group>
-            </el-form-item>
-            <el-form-item label="排序" prop="sort">
-                <el-input-number v-model.number="moneyCrud2.form.sort" :min="0" :max="999" controls-position="right" />
-            </el-form-item>
-        </MoneyForm>
-    </PageWrapper>
+  <div class="app-container">
+    <!-- 搜索 -->
+    <div v-if="crud.props.searchToggle" class="filter-container">
+      <el-input v-model="query.nameOrDesc" placeholder="字典名或者描述" class="filter-item-200" @keyup.enter.native="crud.toQuery" />
+      <rr-operation />
+    </div>
+    <el-row :gutter="20">
+      <el-col :sm="24" :md="12">
+        <el-card class="box-card" shadow="never">
+          <div slot="header" class="clearfix">
+            <span class="role-span">字典</span>
+          </div>
+          <!-- CRUD操作 -->
+          <crud-operation :permission="permission" />
+          <!-- 字典管理 -->
+          <el-table ref="table" v-loading="crud.loading" :data="crud.data" style="width: 100%;" highlight-current-row @selection-change="crud.selectionChangeHandler" @current-change="handleCurrentChange">
+            <el-table-column type="selection" width="55" />
+            <el-table-column :show-overflow-tooltip="true" prop="name" label="字典名" />
+            <el-table-column :show-overflow-tooltip="true" prop="description" label="字典描述" />
+            <el-table-column label="操作" width="115" align="center" fixed="right">
+              <template slot-scope="scope">
+                <ud-operation :data="scope.row" :permission="permission" />
+              </template>
+            </el-table-column>
+          </el-table>
+          <!-- 分页 -->
+          <pagination />
+        </el-card>
+      </el-col>
+      <el-col :sm="24" :md="12">
+        <!-- 字典详情管理 -->
+        <el-card class="box-card" shadow="never">
+          <div slot="header" class="clearfix">
+            <el-tooltip class="item" effect="dark" content="点击字典显示字典详情" placement="top">
+              <span class="role-span">字典详情</span>
+            </el-tooltip>
+            <el-button v-if="showButton" v-permission="['dict:edit']" icon="el-icon-plus" size="mini" style="float: right; padding: 6px 9px" type="primary" @click="$refs.dictDetail && $refs.dictDetail.crud.toAdd()">新增</el-button>
+          </div>
+          <dict-detail ref="dictDetail" />
+        </el-card>
+      </el-col>
+    </el-row>
+    <!--字典表单渲染-->
+    <el-dialog append-to-body :close-on-click-modal="false" :before-close="crud.cancelCU" :visible.sync="crud.status.cu > 0" :title="crud.status.title" width="360px">
+      <el-form ref="form" :inline="true" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="字典名" prop="name">
+          <el-input v-model="form.name" :disabled="crud.status.isEdit" style="width: 220px;" @keydown.native="keydown($event)" />
+        </el-form-item>
+        <el-form-item label="字典描述">
+          <el-input v-model.trim="form.description" type="textarea" maxlength="250" show-word-limit style="width: 220px;" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="text" @click="crud.cancelCU">取消</el-button>
+        <el-button :loading="crud.status.cu === 2" type="primary" @click="crud.submitCU">确认</el-button>
+      </div>
+    </el-dialog>
+  </div>
 </template>
-<script setup>
-import PageWrapper from "@/components/PageWrapper.vue";
-import MoneyCrud from '@/components/crud/MoneyCrud.js'
-import MoneyCrudTable from "@/components/crud/MoneyCrudTable.vue";
-import MoneyRR from "@/components/crud/MoneyRR.vue";
-import MoneyUD from "@/components/crud/MoneyUD.vue";
-import MoneyCUD from "@/components/crud/MoneyCUD.vue";
-import MoneyForm from "@/components/crud/MoneyForm.vue";
 
-import {ref} from "vue";
-import dictApi from "@/api/module/dict.js"
-import {useUserStore} from "@/store/index.js";
+<script>
+import dictDetail from './dictDetail'
+import dictApi from '@/api/system/dict'
+import rrOperation from '@/components/Crud/RR.operation.vue'
+import udOperation from '@/components/Crud/UD.operation.vue'
+import crudOperation from '@/components/Crud/CRUD.operation.vue'
+import Pagination from '@/components/Crud/Pagination.vue'
+import CRUD, { presenter, header, form, crud } from '@/components/Crud/crud'
 
-const userStore = useUserStore()
-const columns = [
-    {prop: 'name', label: '字典名称'},
-    {prop: 'description', label: '字典描述'},
-    {
-        prop: 'opt',
-        label: '操作',
-        width: 120,
-        align: 'center',
-        fixed: 'right',
-        showOverflowTooltip: false,
-        isMoneyUD: true
+export default {
+  name: 'Dict',
+  components: { Pagination, rrOperation, udOperation, crudOperation, dictDetail },
+  cruds() {
+    return CRUD({ title: '字典', url: '/dict', crudMethod: { ...dictApi } })
+  },
+  mixins: [
+    presenter(),
+    header(),
+    form({
+      // 表单初始值
+      id: null,
+      name: null,
+      description: null
+    }),
+    crud()
+  ],
+  data() {
+    return {
+      // 操作权限定义
+      permission: {
+        add: ['dict:add'],
+        edit: ['dict:edit'],
+        del: ['dict:del']
+      },
+      // 显示字典详情新增按钮
+      showButton: false,
+      // 表单验证规则
+      rules: {
+        name: [{ required: true, message: '请输入字典名', trigger: 'blur' }]
+      }
     }
-]
-const rules = {
-    name: [{required: true, message: '请输入字典名称'}]
-}
-const moneyCrud = ref(new MoneyCrud({
-    columns,
-    crudMethod: dictApi,
-    // 权限控制
-    optShow: {
-        checkbox: userStore.hasPermission(['dict:edit', 'dict:del']),
-        add: userStore.hasPermission('dict:add'),
-        edit: userStore.hasPermission('dict:edit'),
-        del: userStore.hasPermission('dict:del')
+  },
+  methods: {
+    // 新增与编辑前做的操作
+    [CRUD.HOOK.afterDelete](crud, form) {
+      this.showButton = false
+      this.$refs.dictDetail.crud.data = []
     },
-}))
-moneyCrud.value._ref = moneyCrud
-
-const columns2 = [
-    {prop: 'label', label: '字典标签'},
-    {prop: 'value', label: '字典值'},
-    {prop: 'hidden', label: '隐藏'},
-    {prop: 'sort', label: '排序', sortable: true},
-    {
-        prop: 'opt',
-        label: '操作',
-        width: 120,
-        align: 'center',
-        fixed: 'right',
-        showOverflowTooltip: false,
-        isMoneyUD: true
+    // 选中字典
+    handleCurrentChange(val) {
+      if (val) {
+        this.showButton = true
+        this.$refs.dictDetail.query.dict = val.name
+        this.$refs.dictDetail.crud.toQuery()
+      }
+    },
+    // 禁止输入空格
+    keydown(e) {
+      if (e.keyCode === 32) {
+        e.returnValue = false
+      }
     }
-]
-const rules2 = {
-    dict: [{required: true, message: '请选择字典'}],
-    label: [{required: true, message: '请输入字典标签'}],
-    value: [{required: true, message: '请输入字典值'}],
-}
-const moneyCrud2 = ref(new MoneyCrud({
-    columns: columns2,
-    isPage: false,
-    defaultForm: {
-        sort: 999,
-        hidden: false
-    },
-    crudMethod: {
-        list: false,
-        add: dictApi.addDetail,
-        edit: dictApi.editDetail,
-        del: dictApi.delDetail
-    },
-    // 权限控制
-    optShow: {
-        checkbox: false,
-        add: userStore.hasPermission('dict:add'),
-        edit: userStore.hasPermission('dict:edit'),
-        del: userStore.hasPermission('dict:del')
-    },
-}))
-moneyCrud2.value._ref = moneyCrud2
-
-let currentDict = null
-// 字典行点击查询字典详情
-moneyCrud.value.currentChange = async (currentRow) => {
-    currentDict = currentRow
-    const dict = currentRow.name
-    const {data} = await dictApi.getDetail(dict)
-    moneyCrud2.value.data = data
-    moneyCrud2.value.defaultForm.dict = dict
-}
-moneyCrud2.value.Hook.afterDoQuery = () => {
-    if (currentDict) moneyCrud.value.currentChange(currentDict)
+  }
 }
 </script>
+
 <style>
-.el-button-group.ml-4 {
-    margin-left: 0.25rem;
-}
 </style>

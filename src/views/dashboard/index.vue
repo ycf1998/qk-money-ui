@@ -1,8 +1,28 @@
 <template>
-    <PageWrapper>
-        Dashboard
-    </PageWrapper>
+  <div class="dashboard-container">
+    <div class="dashboard-text">name: {{ user.nickname }}</div>
+  </div>
 </template>
-<script setup>
-import PageWrapper from "@/components/PageWrapper.vue";
+
+<script>
+import { mapGetters } from 'vuex'
+
+export default {
+  name: 'Dashboard',
+  computed: {
+    ...mapGetters(['user'])
+  }
+}
 </script>
+
+<style lang="scss" scoped>
+.dashboard {
+  &-container {
+    margin: 30px;
+  }
+  &-text {
+    font-size: 30px;
+    line-height: 46px;
+  }
+}
+</style>

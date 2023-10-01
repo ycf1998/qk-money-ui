@@ -1,4 +1,4 @@
-# QK-MONEY-UI
+# Qk-Money-Web
 
 See [QK-MONEY](https://github.com/ycf1998/qk-money)
 
@@ -19,4 +19,3 @@ npm run dev
 ```
 npm run build
 ```
-

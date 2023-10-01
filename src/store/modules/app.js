@@ -1,49 +1,55 @@
-import {defineStore} from 'pinia'
-import authApi from '@/api/module/auth.js'
-import Layout from "@/layouts/DashboardLayout.vue";
-const views = import.meta.glob('@/views/**')
+import Cookies from 'js-cookie'
 
-export const useAppStore = defineStore('app', {
-    state: () => ({
-        routes: null,
-    }),
-    actions: {
-        async loadRoutes() {
-            const {data} = await authApi.getDyRoutes()
-            if (data) {
-                this.routes = []
-                data.filter(e => !e.hidden).forEach(e => {
-                    const route = {
-                        path: '/' + e.path,
-                        component: Layout,
-                        meta: e.meta,
-                        iframe: e.iframe,
-                    }
-                    if (e.children && e.children.length > 0) {
-                        route.children = e.children.filter(e => !e.hidden)
-                            .map(o => {
-                                return {
-                                    name: o.name,
-                                    path: o.path,
-                                    component: views[`/src/views/${o.component}.vue`],
-                                    meta: o.meta,
-                                    iframe: o.iframe
-                                }
-                            })
-                    } else {
-                        route.children = [{
-                            name: e.name,
-                            path: '',
-                            component: views[`/src/views/${e.component}.vue`],
-                            meta: e.meta,
-                            iframe: e.iframe
-                        }]
-                    }
-                    this.routes.push(route)
-                    this.$router.addRoute(route)
-                })
-                console.log(this.routes)
-            }
-        }
-    }
-})
+const state = {
+  // 侧边栏
+  sidebar: {
+    opened: Cookies.get('sidebarStatus') ? !!+Cookies.get('sidebarStatus') : true,
+    withoutAnimation: false
+  },
+  // 设备类型
+  device: 'desktop',
+  // 整体大小
+  size: Cookies.get('size') || 'medium'
+}
+
+const mutations = {
+  TOGGLE_SIDEBAR: state => {
+    state.sidebar.opened = !state.sidebar.opened
+    state.sidebar.withoutAnimation = false
+    Cookies.set('sidebarStatus', state.sidebar.opened ? 1 : 0)
+  },
+  CLOSE_SIDEBAR: (state, withoutAnimation) => {
+    state.sidebar.opened = false
+    state.sidebar.withoutAnimation = withoutAnimation
+    Cookies.set('sidebarStatus', 0)
+  },
+  TOGGLE_DEVICE: (state, device) => {
+    state.device = device
+  },
+  SET_SIZE: (state, size) => {
+    state.size = size
+    Cookies.set('size', size)
+  }
+}
+
+const actions = {
+  toggleSideBar ({ commit }) {
+    commit('TOGGLE_SIDEBAR')
+  },
+  closeSideBar ({ commit }, { withoutAnimation }) {
+    commit('CLOSE_SIDEBAR', withoutAnimation)
+  },
+  toggleDevice ({ commit }, device) {
+    commit('TOGGLE_DEVICE', device)
+  },
+  setSize ({ commit }, size) {
+    commit('SET_SIZE', size)
+  }
+}
+
+export default {
+  namespaced: true,
+  state,
+  mutations,
+  actions
+}
