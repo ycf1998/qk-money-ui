@@ -19,3 +19,15 @@ npm run dev
 ```
 npm run build
 ```
+
+### Screenshots
+
+![image-20230615230201028](README.assets/image-20230615230201028.png)
+
+![image-20230615230217963](README.assets/image-20230615230217963.png)
+
+![image-20230615230228541](README.assets/image-20230615230228541.png)
+
+![image-20230615230243117](README.assets/image-20230615230243117.png)
+
+![image-20230615230254029](README.assets/image-20230615230254029.png)
