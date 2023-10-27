@@ -7,7 +7,7 @@ export function req(options) {
         onlyUI === 'log' ? console.log(JSON.stringify(options)) :alert(JSON.stringify(options))
         const defaultKey = `${options['method']}_default`
         const key = `${options['method']}_${options['url']}`
-        return new Promise((resolve, reject) => resolve(mock[key] || mock[defaultKey]))
+        return new Promise((resolve) => resolve(mock[key] || mock[defaultKey]))
     } else {
         return instance.request(options)
     }

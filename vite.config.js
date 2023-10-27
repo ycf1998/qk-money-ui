@@ -17,7 +17,7 @@ export default defineConfig(async () => ({
     vue(),
     createSvgIconsPlugin({
       iconDirs: [resolve(__dirname, 'src/assets/icons')],
-      symbolId: 'icon-[name]'
+      symbolId: 'icon-[dir]-[name]'
     }),
     AutoImport({
       resolvers: [ElementPlusResolver()],

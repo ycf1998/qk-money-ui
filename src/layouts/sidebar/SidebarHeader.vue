@@ -21,8 +21,6 @@ const tenantTitle = window.tenant?.tenantName
             <h2 v-show="sidebarState.isOpen || sidebarState.isHovered" class="ml-1 pt-3 font-serif">{{ tenantTitle }}</h2>
         </router-link>
 
-
-
         <a href="javascript:void(0)" v-show="sidebarState.isOpen || sidebarState.isHovered"
             @click="sidebarState.isOpen = !sidebarState.isOpen">
             <svg-icon name="menu-open" class="w-6 h-6 hidden lg:block" v-show="sidebarState.isOpen" />

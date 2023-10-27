@@ -17,7 +17,7 @@
                 {{ dict.permissionTypeKv[scope.row.permissionType] }}
             </template>
             <template #icon="{scope}">
-                <svg-icon v-if="scope.row.icon" :name="scope.row.icon" />
+                <svg-icon v-if="scope.row.icon" :name="scope.row.icon" dir="open" />
             </template>
             <template #hidden="{scope}">
                 <el-tag v-if="scope.row.hidden" type="info">是</el-tag>
@@ -30,7 +30,7 @@
         <!-- 表单 -->
         <MoneyForm :money-crud="moneyCrud" :inline="true" :rules="rulesMap[type]" :dialog-class="'!w-11/12 md:!w-5/12'">
             <el-form-item label="资源类型" prop="permissionType" class="w-full">
-                <el-radio-group v-model="moneyCrud.form.permissionType" @change="val => type = val">
+                <el-radio-group v-model="moneyCrud.form.permissionType" @change="changePermissionType">
                     <el-radio-button v-for="(item, index) in dict.permissionType" :key="index" :label="item.value">
                         {{ item.label }}
                     </el-radio-button>
@@ -84,8 +84,7 @@
             <el-form-item label="上级类目" prop="parentId" class="w-full">
                 <el-tree-select v-model="moneyCrud.form.parentId" :data="permissionsTree" class="!w-full"
                                 value-key="id" :props="{ label: 'permissionName' }" check-strictly
-                                :render-after-expand="false" :expand-on-click-node="false"
-                                :disabled="type === 'DIR'" />
+                                :render-after-expand="false" :expand-on-click-node="false" />
             </el-form-item>
             <el-form-item label="排序" prop="sort">
                 <el-input-number v-model.number="moneyCrud.form.sort" :min="0" :max="999" controls-position="right" />
@@ -143,7 +142,7 @@ const rulesMap = {
             {min: 2, max: 20, message: '长度在 2 到 20 个字符'}
         ],
         routerPath: [{required: true, message: '请填写路由地址'}],
-        parentId: [{required: true, message: '请选择上级菜单'}]
+        parentId: [{required: true, message: '请选择上级目录'}]
     },
     MENU: {
         icon: [{required: true, message: '请选择图标', trigger: 'change'}],
@@ -155,7 +154,7 @@ const rulesMap = {
         routerPath: [{required: true, message: '请填写路由地址'}],
         componentName: [{required: true, message: '请填写组件名称'}],
         componentPath: [{required: true, message: '请填写组件路径'}],
-        parentId: [{required: true, message: '请选择上级菜单'}]
+        parentId: [{required: true, message: '请选择上级目录'}]
     },
     BUTTON: {
         permissionName: [
@@ -163,7 +162,7 @@ const rulesMap = {
             {min: 2, max: 20, message: '长度在 2 到 20 个字符'}
         ],
         permission: [{required: true, message: '请填写权限标识'}],
-        parentId: [{required: true, message: '请选择上级菜单'}]
+        parentId: [{required: true, message: '请选择所属菜单'}]
     }
 }
 const moneyCrud = ref(new MoneyCrud({
@@ -173,7 +172,7 @@ const moneyCrud = ref(new MoneyCrud({
     defaultForm: {
         icon: 'app',
         permissionType: 'DIR',
-        parentId: 0,
+        parentId: null,
         sort: 999,
         hidden: false,
     },
@@ -190,13 +189,36 @@ const type = ref('DIR')
 moneyCrud.value.init(moneyCrud, async () => {
     dict.value = await dictApi.loadDict(["permissionType"])
 })
-moneyCrud.value.Hook.afterDoQuery = (data) => {
-    permissionsTree.value = [{id: 0, permissionName: '顶级类目', children: data}]
-}
 moneyCrud.value.Hook.beforeToAdd = () => {
-    type.value = 'DIR'
+    changePermissionType('DIR')
 }
 moneyCrud.value.Hook.beforeToEdit = (form) => {
-    type.value = form.permissionType
+    changePermissionType(form.permissionType)
+}
+
+/**
+ * 切换资源类型
+ * @param value
+ */
+function changePermissionType(value) {
+    type.value = value
+    // 目录和菜单上级只能是目录，按钮上级只能是菜单
+    const data = moneyCrud.value.data
+    const disableType = ['DIR', 'MENU'].includes(value) ? ['MENU', 'BUTTON'] : ['DIR', 'BUTTON']
+    permissionsTree.value = flagDisabled([{
+        id: 0,
+        permissionName: '顶级类目',
+        permissionType: 'DIR',
+        children: data
+    }], disableType)
+}
+
+function flagDisabled(data, disableType) {
+    if (!data || data.length < 1) return
+    data.forEach(e => {
+        e.disabled = disableType.includes(e.permissionType)
+        flagDisabled(e.children, disableType)
+    })
+    return data
 }
 </script>

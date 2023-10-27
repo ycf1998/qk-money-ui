@@ -34,8 +34,8 @@ import MoneyUD from "@/components/crud/MoneyUD.vue";
 import MoneyForm from "@/components/crud/MoneyForm.vue";
 
 import {ref} from "vue";
-import templateApi from "@/api/template.js";
 import {useUserStore} from "@/store/index.js";
+import templateApi from "@/api/template.js";
 
 const userStore = useUserStore()
 const columns = [

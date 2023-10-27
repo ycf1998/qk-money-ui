@@ -9,6 +9,10 @@
 import { computed } from 'vue'
 
 const props = defineProps({
+    dir: {
+        type: String,
+        default: ''
+    },
     name: {
         type: String,
         required: true
@@ -24,7 +28,7 @@ const props = defineProps({
 })
 
 const iconName = computed(() => {
-    return `#icon-${props.name}`
+    return `#icon-${props.dir? props.dir + '-' : ''}${props.name}`
 })
 const iconClass = computed(() => {
     return props.class ? props.class : `w-6 h-6`

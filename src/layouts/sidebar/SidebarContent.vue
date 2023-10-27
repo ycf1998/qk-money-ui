@@ -1,20 +1,23 @@
 <script setup>
-import {useRouter} from 'vue-router'
+import SidebarMenu from "@/layouts/sidebar/SidebarMenu.vue";
 import SidebarLink from "@/layouts/sidebar/SidebarLink.vue";
-import {sidebarState} from "@/composables/index.js";
+import {useRouter} from 'vue-router'
 import {useAppStore} from "@/store/index.js";
 
-const routes = useAppStore().routes?.filter(e => !e.hidden)
-routes.forEach(route => {
-    route.children = route.children?.filter(e => !e.hidden)
-})
+const menus = filterHidden(useAppStore().menus)
 
 const isCurrentRoute = (routeName) => {
     return useRouter().currentRoute.value.name === routeName
 }
 
-const isCurrentPath = (path) => {
-    return useRouter().currentRoute.value.path.startsWith(path)
+function filterHidden(routes) {
+    if (routes) {
+        routes = routes.filter(e => !e.hidden)
+        routes.forEach(route => {
+            route.children = filterHidden(route.children)
+        })
+    }
+    return routes
 }
 </script>
 
@@ -25,34 +28,8 @@ const isCurrentPath = (path) => {
                 <SidebarLink title="仪表盘" icon="dashboard" :to="{ name: 'Dashboard' }"
                              :active="isCurrentRoute('Dashboard')" />
             </li>
-
-            <template v-for="(route, index) in routes" :key="index">
-                <li v-if="route.children.length > 1">
-                    <li>
-                        <details class="group [&_summary::-webkit-details-marker]:hidden"
-                                 :open="isCurrentPath(route.path)">
-                            <SidebarLink summary :title="route.meta.title" :icon="route.meta.icon"
-                                         :active="isCurrentPath(route.path)" />
-                            <ul class="mt-2 space-y-1 px-3"
-                                v-show="sidebarState.isOpen || sidebarState.isHovered">
-                                <li v-for="(menu, index) in route.children" :key="index">
-                                    <SidebarLink :title="menu.meta.title" :icon="menu.meta.icon"
-                                                 :to="{ name: menu.name }"
-                                                 :active="isCurrentRoute(menu.name)" />
-                                </li>
-                            </ul>
-                        </details>
-                    </li>
-                </li>
-                <li v-else-if="route.children.length === 1">
-                    <SidebarLink :title="route.children[0].meta.title" :icon="route.children[0].meta.icon"
-                                 :to="{ name: route.children[0].name }" :active="isCurrentRoute(route.children[0].name)" />
-                </li>
-                <li v-else>
-                    <SidebarLink :title="route.meta.title" :icon="route.meta.icon"
-                                 :to="{ name: route.name }" :active="isCurrentPath(route.path)" />
-                </li>
-            </template>
+            <!-- 动态菜单 -->
+            <SidebarMenu v-for="(menu, index) in menus" :key="index" :menu="menu" />
         </ul>
     </perfect-scrollbar>
 </template>

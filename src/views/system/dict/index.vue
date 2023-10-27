@@ -77,8 +77,8 @@ import MoneyCUD from "@/components/crud/MoneyCUD.vue";
 import MoneyForm from "@/components/crud/MoneyForm.vue";
 
 import {ref} from "vue";
-import dictApi from "@/api/system/dict.js";
 import {useUserStore} from "@/store/index.js";
+import dictApi from "@/api/system/dict.js";
 
 const userStore = useUserStore()
 const columns = [

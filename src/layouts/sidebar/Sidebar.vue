@@ -1,6 +1,6 @@
 <script setup>
-import { onMounted, onUnmounted } from 'vue'
-import { sidebarState } from '@/composables'
+import {onMounted, onUnmounted} from 'vue'
+import {sidebarState} from '@/composables'
 import SidebarHeader from './SidebarHeader.vue'
 import SidebarContent from './SidebarContent.vue'
 
@@ -15,9 +15,9 @@ onMounted(() => {
 
 <template>
     <transition enter-active-class="transition" enter-from-class="opacity-0" enter-to-class="opacity-100"
-        leave-active-class="transition" leave-from-class="opacity-100" leave-to-class="opacity-0">
+                leave-active-class="transition" leave-from-class="opacity-100" leave-to-class="opacity-0">
         <div v-show="sidebarState.isOpen" @click="sidebarState.isOpen = false"
-            class="fixed inset-0 z-20 bg-black/50 lg:hidden"></div>
+             class="fixed inset-0 z-20 bg-black/50 lg:hidden"></div>
     </transition>
 
     <aside style="transition-property: width, transform;transition-duration: 150ms;" :class="[

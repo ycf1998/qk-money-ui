@@ -15,7 +15,7 @@
         <!-- 数据表格 -->
         <MoneyCrudTable :money-crud="moneyCrud">
             <template #enabled="{scope}">
-                <el-switch v-model="scope.row.enabled" @change="changeEnabled(scope.row)" />
+                <el-switch v-model="scope.row.enabled" :disabled="moneyCrud.rowOptDisabled.checkbox(scope.row)" @change="changeEnabled(scope.row)" />
             </template>
             <template #opt="{scope}">
                 <el-button plain type="primary" size="small" @click="toConfigPermission(scope.row)"
@@ -75,9 +75,9 @@ import MoneyUD from "@/components/crud/MoneyUD.vue";
 import MoneyForm from "@/components/crud/MoneyForm.vue";
 
 import {ref} from "vue";
+import {useUserStore} from "@/store/index.js";
 import roleApi from "@/api/system/role.js";
 import permissionApi from "@/api/system/permission.js";
-import {useUserStore} from "@/store/index.js";
 
 const userStore = useUserStore()
 const columns = [
@@ -140,9 +140,9 @@ moneyCrud.value.init(moneyCrud, async () => {
  * @param row
  */
 function changeEnabled(row) {
-    const enabled = row.enabled
+    const {id, roleName, enabled} = row
     ElMessageBox.confirm(
-        `确认${enabled ? '启用' : '禁用'}角色【${row.roleName}】?`,
+        `确认${enabled ? '启用' : '禁用'}角色【${roleName}】?`,
         '提示',
         {
             confirmButtonText: '确定',
@@ -150,13 +150,10 @@ function changeEnabled(row) {
             type: 'warning',
         }
     ).then(() => {
-        roleApi.edit({
-            id: row.id,
-            enabled
-        })
+        roleApi.edit({id, enabled})
             .then(() => moneyCrud.value.messageOk())
-            .catch(() => row.enabled = !row.enabled)
-    })
+            .catch(() => row.enabled = !enabled)
+    }).catch(() => row.enabled = !enabled)
 }
 
 /**

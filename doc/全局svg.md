@@ -18,7 +18,7 @@ export default defineConfig(async () => ({
                 // 图标存放路径
                 iconDirs: [resolve(__dirname, 'src/assets/icons')],
                 // 标识 id
-                symbolId: 'icon-[name]'
+                symbolId: 'icon-[dir]-[name]'
             }),
         ]
     })
@@ -34,6 +34,7 @@ import 'virtual:svg-icons-register'
 [SvgIcon.vue](../src/components/SvgIcon.vue)
 
 ```vue
+<!-- SVG 图标 -->
 <template>
     <svg :class="iconClass" :fill="fill" aria-hidden="true">
         <use :xlink:href="iconName" />
@@ -44,6 +45,10 @@ import 'virtual:svg-icons-register'
     import { computed } from 'vue'
 
     const props = defineProps({
+        dir: {
+            type: String,
+            default: ''
+        },
         name: {
             type: String,
             required: true
@@ -59,7 +64,7 @@ import 'virtual:svg-icons-register'
     })
 
     const iconName = computed(() => {
-        return `#icon-${props.name}`
+        return `#icon-${props.dir? props.dir + '-' : ''}${props.name}`
     })
     const iconClass = computed(() => {
         return props.class ? props.class : `w-6 h-6`
@@ -81,6 +86,20 @@ app.component('svg-icon', SvgIcon)
 
 ### 获取所有 SymbolId（常用于图标选择器）
 ```js
-import ids from 'virtual:svg-icons-names'
+import iconNmes from 'virtual:svg-icons-names'
 // => ['icon-icon1','icon-icon2','icon-icon3']
 ```
+
+## 图标选择器 IconSelect
+[IconSelect.vue](../src/components/IconSelect.vue)
+
+```vue
+<IconSelect :default-icon="moneyCrud.form.icon" @selected="icon => moneyCrud.form.icon = icon" />
+```
+
+属性：
+- dir：文件夹，默认为 open，代表可选图标为 icons/open 下的图标。
+- default-icon：默认选中的图标，默认为 app。即完整 icon = icon-open-app。
+
+方法：
+- selected：选中图标触发事件，入参为图标名称，不包含 icon-open-。

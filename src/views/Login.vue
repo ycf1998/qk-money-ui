@@ -27,10 +27,16 @@
                     Sign in
                 </el-button>
             </el-form>
+            <div class="flex justify-center gap-6" v-if="noProd">
+                <el-tag class="cursor-pointer !p-2" type="danger" @click="() => {loginForm.username = 'money';loginForm.password= '123'}">超级管理员</el-tag>
+                <el-tag class="cursor-pointer !p-2" type="success" @click="() => {loginForm.username = 'admin';loginForm.password= '123456'}">管理员</el-tag>
+                <el-tag class="cursor-pointer !p-2" @click="() => {loginForm.username = 'guest';loginForm.password= '123456'}">游客</el-tag>
+            </div>
         </el-card>
     </div>
 </template>
 <script setup>
+const noProd = import.meta.env.MODE !== 'production'
 const title = document.title
 import {ref} from "vue"
 import {useUserStore} from '@/store'
@@ -41,8 +47,8 @@ const redirect = useRoute().query.redirect
 const userStore = useUserStore()
 const loginFormRef = ref()
 const loginForm = ref({
-    username: 'money',
-    password: '123'
+    username: '',
+    password: ''
 })
 const rules = {
     username: [{required: true, trigger: 'change'}],
@@ -50,8 +56,8 @@ const rules = {
 }
 const loading = ref(false)
 
-async function login(e) {
-    e.preventDefault()
+async function login(evt) {
+    evt.preventDefault()
     await loginFormRef.value.validate((valid) => {
         if (!valid) return
         loading.value = true

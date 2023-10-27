@@ -40,10 +40,16 @@ function logout() {
             'translate-y-0': scrolling.up,
         },
     ]">
-        <el-breadcrumb separator="/">
-            <el-breadcrumb-item v-for="item in breadcrumb" :to="{path: item.path}"> {{ item.meta.title }}
-            </el-breadcrumb-item>
-        </el-breadcrumb>
+        <div class="flex items-center gap-2">
+            <label class="swap" @click="sidebarState.isOpen = !sidebarState.isOpen">
+                <svg-icon name="menu-close" class="w-6 h-6 hidden md:block lg:hidden"  />
+            </label>
+            <el-breadcrumb separator="/">
+
+                <el-breadcrumb-item v-for="item in breadcrumb" :to="{path: item.path}"> {{ item.meta.title }}
+                </el-breadcrumb-item>
+            </el-breadcrumb>
+        </div>
 
         <div class="flex items-center gap-2">
             <a href="javascript:void(0)" class="hidden md:inline-flex" @click="toggleDarkMode()">

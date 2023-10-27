@@ -12,7 +12,7 @@ export default function (router) {
             setToken('only_ui')
         }
         const hasToken = getToken()
-        if (hasToken && !useAppStore().routes) {
+        if (hasToken && !useAppStore().menus) {
             await useAppStore().loadRoutes()
             return to.fullPath
         }
