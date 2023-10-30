@@ -1,6 +1,4 @@
-export const config = {
-    // 标题
-    title: 'QK-Money',
+export default {
     // 语言
     lang: 'zh-cn',
     // 时区
@@ -22,17 +20,21 @@ export const config = {
     localOSSPath: '/assets/',
     // 云OSS路径
     cloudOSSPath: '',
-}
 
-export function getOssUrl(path, cloud) {
-    if (path && !path.includes('http')) {
-        if (cloud) {
-            path = config.cloudOSSPath + path
-        } else {
-            path = import.meta.env.VITE_BASE_URL + config.localOSSPath + path
+    /**
+     * 获取完整路径
+     * @param path
+     * @param cloud
+     * @returns {string}
+     */
+    getOssUrl(path, cloud = false) {
+        if (path && !path.includes('http')) {
+            if (cloud) {
+               path = config.cloudOSSPath + path
+            } else {
+                path = import.meta.env.VITE_BASE_URL + this.localOSSPath + path
+            }
         }
+        return path
     }
-    return path
 }
-
-export default config

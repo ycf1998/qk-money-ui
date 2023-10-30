@@ -23,9 +23,9 @@ onMounted(() => {
     <aside style="transition-property: width, transform;transition-duration: 150ms;" :class="[
         'fixed bg-base-100 inset-y-0 z-20 py-4 flex flex-col space-y-6 shadow-lg dark:border-r border-gray-600',
         {
-            'translate-x-0 w-64':
+            'translate-x-0 w-60':
                 sidebarState.isOpen || sidebarState.isHovered,
-            '-translate-x-full w-64 md:w-16 md:translate-x-0':
+            '-translate-x-full w-60 md:w-16 md:translate-x-0':
                 !sidebarState.isOpen && !sidebarState.isHovered,
         },
     ]" @mouseenter="sidebarState.handleHover(true)" @mouseleave="sidebarState.handleHover(false)">

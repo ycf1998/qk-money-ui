@@ -44,8 +44,7 @@
 
 <script setup>
 import MoneyCrud from "@/components/crud/MoneyCrud.js";
-import {ElMessageBox} from "element-plus";
-import {ref, computed} from 'vue'
+import {computed, ref} from 'vue'
 
 const {moneyCrud} = defineProps({
     moneyCrud: {
@@ -55,7 +54,7 @@ const {moneyCrud} = defineProps({
 })
 
 const confirm = () => {
-    ElMessageBox.confirm(
+    moneyCrud.$confirm(
         `确认删除选中的 ${moneyCrud.selections.length} 数据?`,
         '提示',
         {

@@ -59,21 +59,21 @@ import PageWrapper from "@/components/PageWrapper.vue";
 
 import {ref} from "vue";
 import {useUserStore} from '@/store';
-import {config, getOssUrl} from "@/money.config.js";
-import {ElMessage} from "element-plus";
+import {useGlobalProp} from "@/composables/globalProp.js";
 import {getToken} from "@/composables/token.js";
 
+const globalProp = useGlobalProp()
 const userStore = useUserStore()
 const activeName = 'base'
 const loading = ref(false)
 const uploadUrl = import.meta.env.VITE_BASE_URL + '/users/uploadAvatar'
 const uploadHeader = {
-    [config.tokenHeader]: getToken()
+    [globalProp.$money.tokenHeader]: getToken()
 }
 
 const infoFormRef = ref()
 const infoForm = ref({
-    avatar: getOssUrl(userStore.info.avatar),
+    avatar: globalProp.$money.getOssUrl(userStore.info.avatar),
     nickname: userStore.info.nickname,
     phone: userStore.info.phone,
     email: userStore.info.email,
@@ -113,7 +113,7 @@ const changePwdFormRule = ref({
 
 function handleAvatarSuccess(response, file) {
     infoForm.value.avatar = URL.createObjectURL(file.raw)
-    ElMessage.success("头像更换成功")
+    globalProp.$message.success("头像更换成功")
 }
 
 async function updateInfo() {
@@ -121,7 +121,7 @@ async function updateInfo() {
         if (valid) {
             userStore.updateInfo(infoForm.value)
                 .then(() => {
-                    ElMessage.success('操作成功')
+                    globalProp.$message.success('操作成功')
                     loading.value = false
                 })
                 .catch(() => loading.value = false)

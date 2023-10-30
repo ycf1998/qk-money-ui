@@ -78,7 +78,9 @@ import {ref} from "vue";
 import {useUserStore} from "@/store/index.js";
 import roleApi from "@/api/system/role.js";
 import permissionApi from "@/api/system/permission.js";
+import {useGlobalProp} from "@/composables/globalProp.js";
 
+const globalProp = useGlobalProp()
 const userStore = useUserStore()
 const columns = [
     {prop: 'roleCode', label: '角色编码'},
@@ -141,7 +143,7 @@ moneyCrud.value.init(moneyCrud, async () => {
  */
 function changeEnabled(row) {
     const {id, roleName, enabled} = row
-    ElMessageBox.confirm(
+    globalProp.$confirm(
         `确认${enabled ? '启用' : '禁用'}角色【${roleName}】?`,
         '提示',
         {

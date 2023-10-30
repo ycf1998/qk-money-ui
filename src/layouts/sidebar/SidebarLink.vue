@@ -33,9 +33,9 @@ defineProps({
 </script>
 
 <template>
-    <summary v-if="summary" :class="['relative flex cursor-pointer px-2 py-2.5 rounded-lg text-sm font-medium text-gray-500 ' +
-     'hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-gray-100',
-        { 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-100': active && !sidebarState.isOpen && !sidebarState.isHovered}]">
+    <summary v-if="summary" :class="['relative flex rounded-lg px-2 py-2.5 text-sm font-medium cursor-pointer ' +
+     'text-gray-500 hover:text-black dark:hover:text-gray-300',
+        {'text-blue-700 bg-blue-50 dark:bg-gray-800 dark:text-blue-400': active && !sidebarState.isOpen && !sidebarState.isHovered}]">
         <svg-icon dir="open" :name="icon" />
         <span class="ml-2 text-base font-medium" v-show="titleShow">
             {{ title }}
@@ -45,16 +45,16 @@ defineProps({
         </span>
     </summary>
 
-    <a v-else-if="href" :href="href" :class="['flex px-2 py-2.5 rounded-lg text-sm font-medium text-gray-500 ' +
-     'hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-gray-100',
-        { 'bg-gray-100 text-gray-700 font-semibold dark:bg-gray-700 dark:text-gray-100': active}]">
+    <a v-else-if="href" :href="href" :class="['relative flex rounded-lg px-2 py-2.5 text-sm font-medium',
+        {'text-blue-700 bg-blue-50 dark:bg-gray-800 dark:text-blue-400': active},
+        {'text-gray-500 hover:text-blue-500 dark:hover:text-gray-300': !active}]">
         <svg-icon dir="open" :name="icon" />
         <span class="ml-2 text-base font-medium" v-show="titleShow">{{ title }}</span>
     </a>
 
-    <router-link v-else-if="to" :to="to" :class="['flex px-2 py-2.5 rounded-lg text-sm  text-gray-500 ' +
-     'hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-gray-100',
-        { 'bg-gray-100 text-gray-700 font-semibold dark:bg-gray-700 dark:text-gray-100': active}]">
+    <router-link v-else-if="to" :to="to" :class="['relative flex rounded-lg px-2 py-2.5 text-sm font-medium',
+        {'text-blue-700 bg-blue-50 dark:bg-gray-800 dark:text-blue-400': active},
+        {'text-gray-500 hover:text-blue-500 dark:hover:text-gray-300': !active}]">
         <svg-icon dir="open" :name="icon" />
         <span class="ml-2 text-base" v-show="titleShow">
             {{ title }}

@@ -68,10 +68,11 @@ import MoneyForm from "@/components/crud/MoneyForm.vue";
 
 import {ref} from "vue";
 import {useUserStore} from "@/store/index.js";
-import {ElMessageBox} from "element-plus";
+import {useGlobalProp} from "@/composables/globalProp.js";
 import userApi from "@/api/system/user.js";
 import roleApi from "@/api/system/role.js";
 
+const globalProp = useGlobalProp()
 const userStore = useUserStore()
 const columns = [
     {prop: 'username', label: '用户名'},
@@ -141,7 +142,7 @@ moneyCrud.value.Hook.beforeToEdit = (form) => {
  */
 function changeEnabled(row) {
     const {id, nickname, enabled} = row
-    ElMessageBox.confirm(
+    globalProp.$confirm(
         `确认${enabled ? '启用' : '禁用'}用户【${nickname}】?`,
         '提示',
         {

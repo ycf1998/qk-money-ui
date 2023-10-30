@@ -12,7 +12,7 @@ import Footer from './footer/Footer.vue'
         <div style="transition-property: margin; transition-duration: 150ms" :class="[
             'min-h-screen flex flex-col',
             {
-                'lg:ml-64': sidebarState.isOpen,
+                'lg:ml-60': sidebarState.isOpen,
                 'md:ml-16': !sidebarState.isOpen,
             },
         ]">

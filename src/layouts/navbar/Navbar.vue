@@ -4,11 +4,11 @@ import {useRoute} from "vue-router";
 import {useUserStore} from "@/store";
 import {useFullscreen} from '@vueuse/core'
 import {handleScroll, isDark, scrolling, sidebarState, toggleDarkMode,} from '@/composables'
-import {getOssUrl} from "@/money.config.js";
+import {useGlobalProp} from "@/composables/globalProp.js";;
 import Logo from '@/layouts/Logo.vue'
 
 const {isFullscreen, toggle: toggleFullScreen} = useFullscreen()
-const avatar = getOssUrl(useUserStore().info.avatar)
+const avatar = useGlobalProp().$money.getOssUrl(useUserStore().info.avatar)
 const route = useRoute()
 const breadcrumb = ref()
 

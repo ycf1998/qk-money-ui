@@ -1,4 +1,4 @@
-import {ElMessage} from "element-plus";
+import {useGlobalProp} from "@/composables/globalProp.js";
 
 class MoneyCrud {
     _ref = null
@@ -92,6 +92,9 @@ class MoneyCrud {
         beforeToEdit: (form) => null,
     }
 
+    $message = useGlobalProp().$message
+    $confirm = useGlobalProp().$confirm
+
 
     constructor(option) {
         Object.entries(option).forEach(kv => {
@@ -161,7 +164,7 @@ class MoneyCrud {
     doAdd = async () => {
         return this.crudMethod.add(this.form)
             .then(() => {
-                ElMessage.success(this.msg.add)
+                this.$message.success(this.msg.add)
                 this.doQuery()
             })
     }
@@ -174,14 +177,14 @@ class MoneyCrud {
     doEdit = async () => {
         return this.crudMethod.edit(this.form)
             .then(() => {
-                ElMessage.success(this.msg.edit)
+                this.$message.success(this.msg.edit)
                 this.doQuery()
             })
     }
     doDel = (rows) => {
         return this.crudMethod.del(rows.map(e => e.id))
             .then(() => {
-                ElMessage.success(this.msg.del)
+                this.$message.success(this.msg.del)
                 this.doQuery()
                 return true
             })
@@ -243,7 +246,7 @@ class MoneyCrud {
     /**
      * 操作成功提示
      */
-    messageOk = () => ElMessage.success(this.msg.ok)
+    messageOk = () => this.$message.success(this.msg.ok)
 }
 
 export default MoneyCrud

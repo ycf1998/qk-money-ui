@@ -15,8 +15,8 @@
                 <el-image
                     class="w-8 h-8"
                     preview-teleported
-                    :src="getOssUrl(scope.row.logo)"
-                    :preview-src-list="[getOssUrl(scope.row.logo)]"
+                    :src="$money.getOssUrl(scope.row.logo)"
+                    :preview-src-list="[$money.getOssUrl(scope.row.logo)]"
                     fit="cover"
                 />
             </template>
@@ -33,7 +33,7 @@
             <el-form-item label="Logo" prop="logo">
                 <el-upload class="avatar-uploader" :auto-upload="false" :show-file-list="false" accept="image/*"
                            :on-change="handleLogoSuccess">
-                    <img v-if="moneyCrud.form.logo" :src="getOssUrl(moneyCrud.form.logo)" class="w-32" alt="">
+                    <img v-if="moneyCrud.form.logo" :src="$money.getOssUrl(moneyCrud.form.logo)" class="w-32" alt="">
                     <el-icon v-else class="avatar-uploader-icon !w-32 !h-32">
                         <Plus />
                     </el-icon>
@@ -62,7 +62,6 @@ import MoneyUD from "@/components/crud/MoneyUD.vue";
 import MoneyForm from "@/components/crud/MoneyForm.vue";
 
 import {ref} from "vue";
-import {getOssUrl} from "@/money.config.js";
 import {useUserStore} from "@/store/index.js";
 import tenantApi from "@/api/system/tenant.js";
 
