@@ -1,7 +1,6 @@
 <template>
-    <PageWrapper>
-        <div class="flex justify-center">
-            <el-card class="flex-none w-full md:w-11/12 lg:w-4/5">
+        <div class="flex flex-1 justify-center sm:m-2 my-2 p-6">
+            <el-card class="w-full md:w-11/12 lg:w-4/5">
                 <el-tabs v-model="activeName">
                     <el-tab-pane label="基础信息" name="base" class="flex flex-col">
                         <el-upload
@@ -51,12 +50,9 @@
                 </el-tabs>
             </el-card>
         </div>
-    </PageWrapper>
 </template>
 
 <script setup="props, context">
-import PageWrapper from "@/components/PageWrapper.vue";
-
 import {ref} from "vue";
 import {useUserStore} from '@/store';
 import {useGlobalProp} from "@/composables/globalProp.js";

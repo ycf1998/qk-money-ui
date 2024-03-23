@@ -29,7 +29,7 @@ npm install
 npm run dev
 ```
 
-没有启动后端，可以修改 [.env.development](./.env.development) 配置
+纯前端开发时，修改 [.env.development](./.env.development) 配置
 
 ```properties
 # 填写该值开启纯前端模式，所有请求不会真实触发，使用 mock.js 里的数据。可选值：alert/log
