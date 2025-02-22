@@ -7,7 +7,7 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 
 export default defineConfig(async () => ({
-  envPrefix: ["VITE_", "TAURI_"],
+  envPrefix: ["VITE_"],
   server: {
     port: 1520,
     strictPort: true,
@@ -34,9 +34,10 @@ export default defineConfig(async () => ({
   },
 
   build: {
-    target: process.env.TAURI_PLATFORM == "windows" ? "chrome105" : "safari13",
-    minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
-    sourcemap: !!process.env.TAURI_DEBUG,
+    outDir: 'dist', // 输出目录
+    assetsDir: 'assets', // 静态资源目录
+    sourcemap: process.env.NODE_ENV === 'development', // 开发环境生成 sourcemap
+    minify: 'esbuild', // 使用 esbuild 压缩代码
   },
 
 }))
