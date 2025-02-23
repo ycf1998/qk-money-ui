@@ -1,4 +1,4 @@
-<h1 align="center">🎉 QK-MONEY 后台管理系统 UI 模板</h1>
+<h2 align="center">🎉 QK-MONEY 后台管理系统 UI 模板</h2>
 
 <p align="center">
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="License">
